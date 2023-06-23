@@ -97,3 +97,8 @@ You are required to submit the following for review:
 
 - - -
 © 2023 edX Boot Camps LLC. Confidential and Proprietary. All Rights Reserved.
+
+
+##NOTES FOR README
+
+https://stackoverflow.com/questions/32448992/jquery-append-in-for-loop 
