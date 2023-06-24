@@ -34,29 +34,31 @@ $(document).ready(function () {
 
 var hourNow = dayjs().hour();
 var rowEl = $('#rowtime');
-var headerEl = $('col-2 col-md-1 hour text-center py-3');
+var rowNum = 0;
+//var headerEl = $('#timetitle'); DELETE
 
 console.log(hourNow);
 
 function printCalEvents() {
   timeSlotEl.empty();
-  for(i = 9; i <= 17; i++) {
+  for(i = 9; i <= 17; i++, rowNum++) {
+    var rowHour = (dayjs().set('hour', i).set('minute', 0)).format("hh:mm A");
     if (i < hourNow) {
-      console.log("grey")
       rowEl.addClass('past');
-    } else if (i = hourNow) {
-      console.log("red")
+    } else if (i === hourNow) {
       rowEl.addClass('present');
-    } else {
-      console.log("green")
+    } else if (i > hourNow) {
       rowEl.addClass('future');
     };
-    var timeEl =  $('<div>').text((dayjs().set('hour', i).set('minute', 0)).format("hh:mm A"));
+    
+    //timeSlotEl.children('div').children('div').text((dayjs().set('hour', i).set('minute', 0)).format("hh:mm A"));
+   // timeSlotEl.children('div').children('div').eq(i-1).text((dayjs().set('hour', i).set('minute', 0)).format("hh:mm A"));
+    //var timeEl =  $('#timetitle').text();
     //headerEl.addClass('col-2 col-md-1 hour text-center py-3');
-    headerEl.append(timeEl);
+    //headerEl.append(timeEl);
     timeSlotEl.append(rowEl.clone());
-    console.log((dayjs().set('hour', i).set('minute', 0)).format("hh:mm A"));
     document.getElementById('rowtime').setAttribute('id','hour-'+i);
+    timeSlotEl.children('div').children('div').eq(rowNum).text(rowHour);
   }
 
   //get events from local storage
