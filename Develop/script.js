@@ -27,6 +27,7 @@ $(document).ready(function () {
   // attribute of each time-block be used to do this?
   //
   
+
   // Code to display the current date in the header of the page.
   var today = dayjs();
   $('#currentDay').text(today.format('dddd, MMM D, YYYY'));
@@ -35,12 +36,21 @@ $(document).ready(function () {
 var hourNow = dayjs().hour();
 var rowEl = $('#rowtime');
 var rowNum = 0;
-//var headerEl = $('#timetitle'); DELETE
 
-console.log(hourNow);
+function readSchedulesFromStorage() {
+  var schedules = localStorage.getItem('schedules');
+  if (schedules) {
+    schedules = JSON.parse(schedules);
+  } else {
+    schedules = [];
+  }
+  return schedules;
+}
 
 function printCalEvents() {
   timeSlotEl.empty();
+  var schedules = readSchedulesFromStorage();
+
   for(i = 9; i <= 17; i++, rowNum++) {
     var rowHour = (dayjs().set('hour', i).set('minute', 0)).format("hh:mm A");
     if (i < hourNow) {
@@ -50,20 +60,46 @@ function printCalEvents() {
     } else if (i > hourNow) {
       rowEl.addClass('future');
     };
-    
-    //timeSlotEl.children('div').children('div').text((dayjs().set('hour', i).set('minute', 0)).format("hh:mm A"));
-   // timeSlotEl.children('div').children('div').eq(i-1).text((dayjs().set('hour', i).set('minute', 0)).format("hh:mm A"));
-    //var timeEl =  $('#timetitle').text();
-    //headerEl.addClass('col-2 col-md-1 hour text-center py-3');
-    //headerEl.append(timeEl);
+
     timeSlotEl.append(rowEl.clone());
     document.getElementById('rowtime').setAttribute('id','hour-'+i);
     timeSlotEl.children('div').children('div').eq(rowNum).text(rowHour);
+
+    let obj = schedules.find(o => o.timeID ==='hour-'+i);
+    if (typeof obj !== 'undefined') {
+      timeSlotEl.children('div').children('textarea').eq(rowNum).text(obj.description);
+    } 
   }
 
-  //get events from local storage
+  function saveSchedulesToStorage(schedules) {
+    localStorage.setItem('schedules', JSON.stringify(schedules));
+  }
+
+  function handleSaveSchedule() {
+    var scheduleIndex = $(this).parent().attr('id');
+    var scheduleDescription = $(this).prev().val();
+    var scheduleDetails = {
+      timeID: scheduleIndex,
+      description: scheduleDescription,
+    };
+
+    var schedules = readSchedulesFromStorage();
+
+    var index = schedules.findIndex(schedules => schedules.timeID === scheduleIndex);
+    console.log(index);
+    if (index > -1) {
+      schedules.splice(index, 1);
+    }
+   
+    console.log(scheduleIndex);
+    schedules.push(scheduleDetails);
+    saveSchedulesToStorage(schedules);
+
+    
+    }
   
+  timeSlotEl.on('click', '.saveBtn', handleSaveSchedule);
 
 }
-"<div id=\"hour-9\" class=\"row time-block past\">\n        <div class=\"col-2 col-md-1 hour text-center py-3\">9am</div>\n        <textarea class=\"col-8 col-md-10 description\" rows=\"3\"> </textarea>\n        <button class=\"btn saveBtn col-2 col-md-1\" aria-label=\"save\">\n          <i class=\"fas fa-save\" aria-hidden=\"true\"></i>\n        </button>\n      </div>"
+
 

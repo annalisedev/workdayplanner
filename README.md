@@ -101,4 +101,8 @@ You are required to submit the following for review:
 
 ## NOTES FOR MY README
 
+Site used to append the details from the loop
 https://stackoverflow.com/questions/32448992/jquery-append-in-for-loop 
+
+Site used to remove any current values in local storage and allow user to replace (splice method)
+https://stackoverflow.com/questions/51724323/javascript-removing-object-from-array-by-key-value
