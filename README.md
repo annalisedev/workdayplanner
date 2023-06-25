@@ -2,7 +2,7 @@
 
 ## Link to Deployed Application
 
-A link to the deployed application can be found here: 
+A link to the deployed application can be found here: https://annalisedev.github.io/workdayplanner/Develop/
 
 ## Description
 

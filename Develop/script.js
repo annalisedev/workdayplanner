@@ -1,32 +1,9 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
+
 var timeSlotEl = $('#timeslots');
 
 $(document).ready(function () {
 
-  //clear timeslots on page
-  
   printCalEvents();
-
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  //
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
-  //
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-  //
-  
 
   // Code to display the current date in the header of the page.
   var today = dayjs();
@@ -37,6 +14,7 @@ var hourNow = dayjs().hour();
 var rowEl = $('#rowtime');
 var rowNum = 0;
 
+//pull any existing input from local storage
 function readSchedulesFromStorage() {
   var schedules = localStorage.getItem('schedules');
   if (schedules) {
@@ -48,9 +26,11 @@ function readSchedulesFromStorage() {
 }
 
 function printCalEvents() {
+  //clear timeslots on page
   timeSlotEl.empty();
   var schedules = readSchedulesFromStorage();
 
+  //add appropriate css settings based on the hour
   for(i = 9; i <= 17; i++, rowNum++) {
     var rowHour = (dayjs().set('hour', i).set('minute', 0)).format("hh:mm A");
     if (i < hourNow) {
@@ -61,16 +41,19 @@ function printCalEvents() {
       rowEl.addClass('future');
     };
 
+    //input the time into the slot, then add an hour until 5pm
     timeSlotEl.append(rowEl.clone());
     document.getElementById('rowtime').setAttribute('id','hour-'+i);
     timeSlotEl.children('div').children('div').eq(rowNum).text(rowHour);
 
+    //if there is content in storage then add this in the text area of the row
     let obj = schedules.find(o => o.timeID ==='hour-'+i);
     if (typeof obj !== 'undefined') {
       timeSlotEl.children('div').children('textarea').eq(rowNum).text(obj.description);
     } 
   }
 
+  //save any input into the local storage
   function saveSchedulesToStorage(schedules) {
     localStorage.setItem('schedules', JSON.stringify(schedules));
   }
@@ -83,21 +66,22 @@ function printCalEvents() {
       description: scheduleDescription,
     };
 
+    //this function reachs any current local storage
     var schedules = readSchedulesFromStorage();
 
+    //if an entry exists in teh text area, it will split it from the other objects and remove it, so that it can be replaced by new entries.
     var index = schedules.findIndex(schedules => schedules.timeID === scheduleIndex);
     console.log(index);
     if (index > -1) {
       schedules.splice(index, 1);
     }
    
-    console.log(scheduleIndex);
+    //push schedule descriptions to local storage and save
     schedules.push(scheduleDetails);
     saveSchedulesToStorage(schedules);
-
-    
     }
   
+  //event listener for the save button to trigger following functions
   timeSlotEl.on('click', '.saveBtn', handleSaveSchedule);
 
 }
